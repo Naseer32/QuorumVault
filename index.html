@@ -1,833 +1,1092 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>QuorumVault</title>  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: Arial, sans-serif;
-      background: #f6f8fb;
-      color: #111827;
-    }
-
-    button,
-    input,
-    select,
-    textarea {
-      font: inherit;
-    }
-
-    .container {
-      max-width: 1100px;
-      margin: auto;
-      padding: 24px;
-    }
-
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 32px;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .logo {
-      width: 42px;
-      height: 42px;
-      border-radius: 12px;
-      background: #111827;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-    }
-
-    .brand h1 {
-      font-size: 22px;
-    }
-
-    .network {
-      padding: 8px 12px;
-      border-radius: 20px;
-      background: #e8f7ee;
-      color: #16803c;
-      font-size: 13px;
-      font-weight: bold;
-    }
-
-    .hero {
-      margin-bottom: 28px;
-    }
-
-    .hero-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      gap: 20px;
-    }
-
-    .hero h2 {
-      font-size: 32px;
-      margin-bottom: 8px;
-    }
-
-    .hero p {
-      color: #6b7280;
-      max-width: 650px;
-      line-height: 1.6;
-    }
-
-    .primary-btn {
-      border: none;
-      background: #111827;
-      color: white;
-      padding: 12px 18px;
-      border-radius: 10px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    .primary-btn:hover {
-      opacity: 0.9;
-    }
-
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 16px;
-      margin-bottom: 28px;
-    }
-
-    .card {
-      background: white;
-      border: 1px solid #e5e7eb;
-      border-radius: 14px;
-      padding: 20px;
-    }
-
-    .stat-label {
-      color: #6b7280;
-      font-size: 13px;
-      margin-bottom: 10px;
-    }
-
-    .stat-value {
-      font-size: 25px;
-      font-weight: bold;
-    }
-
-    .section {
-      margin-bottom: 28px;
-    }
-
-    .section-title {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 14px;
-    }
-
-    .section-title h3 {
-      font-size: 18px;
-    }
-
-    .request-card {
-      margin-bottom: 14px;
-    }
-
-    .request {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 20px;
-    }
-
-    .request-info {
-      display: flex;
-      flex-direction: column;
-      gap: 7px;
-    }
-
-    .request-id {
-      font-size: 12px;
-      color: #6b7280;
-    }
-
-    .request-amount {
-      font-size: 22px;
-      font-weight: bold;
-    }
-
-    .request-to {
-      font-size: 13px;
-      color: #6b7280;
-      word-break: break-all;
-    }
-
-    .status {
-      display: inline-block;
-      width: fit-content;
-      padding: 5px 9px;
-      border-radius: 12px;
-      font-size: 12px;
-      font-weight: bold;
-      background: #fff7ed;
-      color: #c2410c;
-    }
-
-    .status.ready {
-      background: #dcfce7;
-      color: #15803d;
-    }
-
-    .approve-btn {
-      border: 1px solid #d1d5db;
-      background: white;
-      padding: 10px 14px;
-      border-radius: 9px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    .approve-btn:hover {
-      background: #f9fafb;
-    }
-
-    .approve-btn:disabled {
-      cursor: not-allowed;
-      opacity: 0.55;
-    }
-
-    .progress {
-      margin-top: 18px;
-    }
-
-    .progress-top {
-      display: flex;
-      justify-content: space-between;
-      font-size: 13px;
-      margin-bottom: 7px;
-    }
-
-    .bar {
-      height: 8px;
-      background: #e5e7eb;
-      border-radius: 10px;
-      overflow: hidden;
-    }
-
-    .bar-fill {
-      height: 100%;
-      background: #111827;
-      transition: width 0.3s ease;
-    }
-
-    .validators {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 12px;
-    }
-
-    .validator {
-      text-align: center;
-      padding: 16px 8px;
-      border: 1px solid #e5e7eb;
-      border-radius: 12px;
-      background: white;
-    }
-
-    .validator-icon {
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
-      background: #f3f4f6;
-      margin: 0 auto 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-    }
-
-    .approved .validator-icon {
-      background: #dcfce7;
-      color: #15803d;
-    }
-
-    .validator-name {
-      font-size: 12px;
-      font-weight: bold;
-    }
-
-    .validator-state {
-      font-size: 11px;
-      color: #6b7280;
-      margin-top: 4px;
-    }
-
-    .architecture {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-    }
-
-    .step {
-      text-align: center;
-      padding: 18px 10px;
-      background: #f9fafb;
-      border-radius: 12px;
-      border: 1px solid #e5e7eb;
-      font-size: 13px;
-      font-weight: bold;
-    }
-
-    .modal {
-      position: fixed;
-      inset: 0;
-      background: rgba(17, 24, 39, 0.45);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      z-index: 10;
-    }
-
-    .modal.active {
-      display: flex;
-    }
-
-    .modal-box {
-      width: 100%;
-      max-width: 520px;
-      background: white;
-      border-radius: 16px;
-      padding: 24px;
-    }
-
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 22px;
-    }
-
-    .modal-header h3 {
-      font-size: 20px;
-    }
-
-    .close {
-      border: none;
-      background: none;
-      font-size: 24px;
-      cursor: pointer;
-      color: #6b7280;
-    }
-
-    .form-group {
-      margin-bottom: 16px;
-    }
-
-    .form-group label {
-      display: block;
-      font-size: 13px;
-      font-weight: bold;
-      margin-bottom: 7px;
-    }
-
-    .form-group input,
-    .form-group select,
-    .form-group textarea {
-      width: 100%;
-      border: 1px solid #d1d5db;
-      border-radius: 9px;
-      padding: 11px 12px;
-      outline: none;
-      background: white;
-    }
-
-    .form-group input:focus,
-    .form-group select:focus,
-    .form-group textarea:focus {
-      border-color: #111827;
-    }
-
-    .form-group textarea {
-      min-height: 80px;
-      resize: vertical;
-    }
-
-    .form-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-      margin-top: 22px;
-    }
-
-    .secondary-btn {
-      border: 1px solid #d1d5db;
-      background: white;
-      color: #111827;
-      padding: 11px 16px;
-      border-radius: 9px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    .empty {
-      text-align: center;
-      padding: 35px 20px;
-      color: #6b7280;
-    }
-
-    footer {
-      text-align: center;
-      color: #9ca3af;
-      font-size: 12px;
-      padding: 25px 0;
-    }
-
-    @media (max-width: 800px) {
-      .stats {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .validators {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .architecture {
-        grid-template-columns: 1fr 1fr;
-      }
-
-      .hero-row {
-        align-items: flex-start;
-        flex-direction: column;
-      }
-    }
-
-    @media (max-width: 500px) {
-      .container {
-        padding: 16px;
-      }
-
-      header {
-        align-items: flex-start;
-      }
-
-      .hero h2 {
-        font-size: 26px;
-      }
-
-      .stats {
-        gap: 10px;
-      }
-
-      .card {
-        padding: 16px;
-      }
-
-      .request {
-        flex-direction: column;
-      }
-
-      .validators {
-        grid-template-columns: 1fr 1fr;
-      }
-    }
-  </style></head><body><div class="container">  <header>
-    <div class="brand">
-      <div class="logo">QV</div>
-      <h1>QuorumVault</h1>
-    </div><div class="network">Rialo DevNet</div>
-
-  </header>  <section class="hero"><div class="hero-row">
-
-  <div>
-    <h2>Threshold-controlled treasury</h2>
-    <p>
-      Coordinate treasury transactions through validator quorums
-      and conditional execution. No single validator can authorize
-      a transaction alone.
-    </p>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QuorumVault</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Inter, Arial, sans-serif;
+  background: #f7f9fc;
+  color: #172033;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.container {
+  width: min(1120px, calc(100% - 32px));
+  margin: auto;
+}
+
+/* Header */
+
+header {
+  padding: 24px 0 10px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: #155eef;
+  color: white;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 18px;
+}
+
+.brand h1 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.network {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 6px 10px;
+  border-radius: 20px;
+  background: #eaf1ff;
+  color: #155eef;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* Hero */
+
+.hero {
+  padding: 32px 0 20px;
+}
+
+.hero-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+}
+
+.hero h2 {
+  margin: 0 0 10px;
+  font-size: clamp(27px, 4vw, 38px);
+  letter-spacing: -0.7px;
+}
+
+.hero p {
+  max-width: 680px;
+  margin: 0;
+  color: #667085;
+  line-height: 1.6;
+}
+
+/* Buttons */
+
+.primary-btn,
+.secondary-btn {
+  border: 0;
+  border-radius: 10px;
+  padding: 12px 17px;
+  font-weight: 700;
+}
+
+.primary-btn {
+  background: #155eef;
+  color: white;
+}
+
+.primary-btn:hover {
+  background: #104dcc;
+}
+
+.secondary-btn {
+  background: #eef2f6;
+  color: #344054;
+}
+
+/* Stats */
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin: 20px 0 34px;
+}
+
+.card {
+  background: white;
+  border: 1px solid #e4e7ec;
+  border-radius: 14px;
+  padding: 20px;
+}
+
+.stat-label {
+  color: #667085;
+  font-size: 13px;
+  margin-bottom: 9px;
+}
+
+.stat-value {
+  font-size: 23px;
+  font-weight: 800;
+}
+
+/* Sections */
+
+.section-title {
+  margin: 34px 0 14px;
+}
+
+.section-title h3 {
+  margin: 0;
+  font-size: 19px;
+}
+
+/* Request */
+
+.request-card {
+  background: white;
+  border: 1px solid #e4e7ec;
+  border-radius: 16px;
+  padding: 22px;
+}
+
+.request-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  align-items: flex-start;
+}
+
+.request-id {
+  color: #667085;
+  font-size: 12px;
+  margin-bottom: 6px;
+}
+
+.amount {
+  font-size: 25px;
+  font-weight: 800;
+}
+
+.status {
+  padding: 7px 11px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  background: #fff4e5;
+  color: #b54708;
+}
+
+.status.ready {
+  background: #eaf1ff;
+  color: #155eef;
+}
+
+.status.executed {
+  background: #e9f8ef;
+  color: #087443;
+}
+
+.request-details {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin: 22px 0;
+}
+
+.detail {
+  background: #f8fafc;
+  border-radius: 10px;
+  padding: 13px;
+}
+
+.detail-label {
+  font-size: 11px;
+  color: #667085;
+  margin-bottom: 5px;
+}
+
+.detail-value {
+  font-size: 13px;
+  font-weight: 700;
+  word-break: break-word;
+}
+
+/* Progress */
+
+.progress-wrap {
+  margin: 20px 0;
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.progress {
+  height: 8px;
+  background: #eaecf0;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  width: 40%;
+  background: #155eef;
+  transition: width .35s ease;
+}
+
+/* Validators */
+
+.validators {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+}
+
+.validator {
+  background: white;
+  border: 1px solid #e4e7ec;
+  border-radius: 14px;
+  padding: 17px 12px;
+  text-align: center;
+  transition: .2s;
+}
+
+.validator.approved {
+  border-color: #b7ebce;
+  background: #f6fffa;
+}
+
+.validator-icon {
+  width: 40px;
+  height: 40px;
+  margin: 0 auto 10px;
+  border-radius: 50%;
+  background: #eef2f6;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+}
+
+.validator.approved .validator-icon {
+  background: #12b76a;
+  color: white;
+}
+
+.validator-name {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.validator-state {
+  margin-top: 5px;
+  font-size: 11px;
+  color: #667085;
+}
+
+.approve-btn {
+  margin-top: 11px;
+  border: 0;
+  border-radius: 8px;
+  padding: 7px 10px;
+  background: #155eef;
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.approve-btn:disabled {
+  background: #d0d5dd;
+  cursor: default;
+}
+
+/* Workflow */
+
+.architecture {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.step {
+  background: white;
+  border: 1px solid #e4e7ec;
+  border-radius: 12px;
+  padding: 17px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.step.active {
+  border-color: #155eef;
+  background: #f5f8ff;
+  color: #155eef;
+}
+
+/* Execution */
+
+.execution-panel {
+  margin-top: 16px;
+  padding: 17px;
+  border-radius: 12px;
+  background: #f8fafc;
+  border: 1px solid #eaecf0;
+}
+
+.execution-message {
+  font-size: 13px;
+  color: #667085;
+  margin-bottom: 12px;
+}
+
+.audit {
+  margin-top: 22px;
+}
+
+.audit-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 12px 0;
+  border-bottom: 1px solid #eaecf0;
+  font-size: 12px;
+}
+
+.audit-row span:last-child {
+  color: #667085;
+}
+
+/* Footer */
+
+footer {
+  padding: 42px 0 28px;
+  text-align: center;
+  color: #98a2b3;
+  font-size: 12px;
+}
+
+/* Modal */
+
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(16, 24, 40, .45);
+  padding: 20px;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.modal-overlay.show {
+  display: flex;
+}
+
+.modal {
+  width: min(520px, 100%);
+  max-height: 90vh;
+  overflow-y: auto;
+  background: white;
+  border-radius: 16px;
+  padding: 22px;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.modal-header h3 {
+  margin: 0;
+}
+
+.close {
+  border: 0;
+  background: transparent;
+  font-size: 27px;
+  color: #667085;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 7px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  border: 1px solid #d0d5dd;
+  border-radius: 9px;
+  padding: 11px;
+  outline: none;
+}
+
+.form-group textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: #155eef;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 9px;
+  margin-top: 20px;
+}
+
+/* Responsive */
+
+@media (max-width: 800px) {
+  .hero-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .hero-row .primary-btn {
+    width: 100%;
+  }
+
+  .stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .validators {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .architecture {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .request-details {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    width: min(100% - 22px, 1120px);
+  }
+
+  header {
+    padding-top: 16px;
+  }
+
+  .stats {
+    gap: 9px;
+  }
+
+  .card {
+    padding: 15px;
+  }
+
+  .stat-value {
+    font-size: 19px;
+  }
+
+  .validators {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .architecture {
+    grid-template-columns: 1fr;
+  }
+
+  .request-card {
+    padding: 16px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<header>
+  <div class="brand">
+    <div class="logo">QV</div>
+    <h1>QuorumVault</h1>
   </div>
 
-  <button class="primary-btn" onclick="openModal()">
-    + Create Request
-  </button>
+  <div class="network">Rialo DevNet</div>
+</header>
 
-</div>
+<section class="hero">
+  <div class="hero-row">
+    <div>
+      <h2>Threshold-controlled treasury</h2>
+      <p>
+        Coordinate treasury transactions through validator quorums
+        and conditional execution. No single validator can authorize
+        a transaction alone.
+      </p>
+    </div>
 
-  </section>  <section class="stats"><div class="card">
-  <div class="stat-label">Treasury Balance</div>
-  <div class="stat-value">10,000 USDC</div>
-</div>
+    <button class="primary-btn" onclick="openModal()">
+      + Create Request
+    </button>
+  </div>
+</section>
 
-<div class="card">
-  <div class="stat-label">Validators</div>
-  <div class="stat-value">5</div>
-</div>
+<section class="stats">
 
-<div class="card">
-  <div class="stat-label">Threshold</div>
-  <div class="stat-value">3 / 5</div>
-</div>
+  <div class="card">
+    <div class="stat-label">Treasury Balance</div>
+    <div class="stat-value">10,000 USDC</div>
+  </div>
 
-<div class="card">
-  <div class="stat-label">Pending Requests</div>
-  <div class="stat-value" id="pendingCount">1</div>
-</div>
+  <div class="card">
+    <div class="stat-label">Validators</div>
+    <div class="stat-value">5</div>
+  </div>
 
-  </section>  <section class="section"><div class="section-title">
+  <div class="card">
+    <div class="stat-label">Threshold</div>
+    <div class="stat-value">3 / 5</div>
+  </div>
+
+  <div class="card">
+    <div class="stat-label">Pending Requests</div>
+    <div class="stat-value" id="pendingCount">1</div>
+  </div>
+
+</section>
+
+<div class="section-title">
   <h3>Transaction Requests</h3>
 </div>
 
 <div id="requests"></div>
 
-  </section>  <section class="section"><div class="section-title">
+<div class="section-title">
   <h3>Validators</h3>
 </div>
 
-<div class="validators">
+<div class="validators" id="validators"></div>
 
-  <div class="validator approved">
-    <div class="validator-icon">✓</div>
-    <div class="validator-name">Validator 1</div>
-    <div class="validator-state">Active</div>
-  </div>
-
-  <div class="validator approved">
-    <div class="validator-icon">✓</div>
-    <div class="validator-name">Validator 2</div>
-    <div class="validator-state">Active</div>
-  </div>
-
-  <div class="validator">
-    <div class="validator-icon">3</div>
-    <div class="validator-name">Validator 3</div>
-    <div class="validator-state">Active</div>
-  </div>
-
-  <div class="validator">
-    <div class="validator-icon">4</div>
-    <div class="validator-name">Validator 4</div>
-    <div class="validator-state">Active</div>
-  </div>
-
-  <div class="validator">
-    <div class="validator-icon">5</div>
-    <div class="validator-name">Validator 5</div>
-    <div class="validator-state">Active</div>
-  </div>
-
-</div>
-
-  </section>  <section class="section"><div class="section-title">
-  <h3>How QuorumVault works</h3>
+<div class="section-title">
+  <h3>Execution Pipeline</h3>
 </div>
 
 <div class="architecture">
-
-  <div class="step">1. Transaction Request</div>
-  <div class="step">2. Validator Quorum</div>
-  <div class="step">3. Threshold Signature</div>
-  <div class="step">4. Conditional Execution</div>
-
+  <div class="step active" id="step1">1. Transaction Request</div>
+  <div class="step" id="step2">2. Validator Quorum</div>
+  <div class="step" id="step3">3. Threshold Signature</div>
+  <div class="step" id="step4">4. Conditional Execution</div>
 </div>
 
-  </section>  <footer>
-    QuorumVault · Built for Rialo
-  </footer></div><!-- CREATE REQUEST MODAL --><div class="modal" id="modal">  <div class="modal-box"><div class="modal-header">
-  <h3>Create Transaction Request</h3>
+<div class="execution-panel">
+  <div class="execution-message" id="executionMessage">
+    Waiting for the required validator quorum.
+  </div>
 
-  <button class="close" onclick="closeModal()">
-    ×
+  <button
+    class="primary-btn"
+    id="executeBtn"
+    onclick="executeRequest()"
+    disabled
+  >
+    Execute Transaction
   </button>
 </div>
 
-<form id="requestForm">
+<div class="section-title">
+  <h3>Audit Trail</h3>
+</div>
 
-  <div class="form-group">
-    <label>Amount (USDC)</label>
-    <input
-      type="number"
-      id="amount"
-      placeholder="100"
-      min="0"
-      step="0.01"
-      required
-    >
+<div class="card audit" id="audit"></div>
+
+<footer>
+  QuorumVault · Built for Rialo
+</footer>
+
+</div>
+
+<!-- Modal -->
+
+<div class="modal-overlay" id="modal">
+
+  <div class="modal">
+
+    <div class="modal-header">
+      <h3>Create Transaction Request</h3>
+
+      <button class="close" onclick="closeModal()">×</button>
+    </div>
+
+    <form id="requestForm">
+
+      <div class="form-group">
+        <label>Amount (USDC)</label>
+        <input
+          type="number"
+          id="amount"
+          placeholder="100"
+          min="0"
+          step="0.01"
+          required
+        >
+      </div>
+
+      <div class="form-group">
+        <label>Recipient Address</label>
+
+        <input
+          type="text"
+          id="recipient"
+          placeholder="0x..."
+          required
+        >
+      </div>
+
+      <div class="form-group">
+        <label>Execution Condition</label>
+
+        <select id="condition">
+          <option value="Block height">Block height</option>
+          <option value="Scheduled time">Scheduled time</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Condition Target</label>
+
+        <input
+          type="text"
+          id="target"
+          placeholder="123456"
+          required
+        >
+      </div>
+
+      <div class="form-group">
+        <label>Description</label>
+
+        <textarea
+          id="description"
+          placeholder="Describe this treasury transaction..."
+        ></textarea>
+      </div>
+
+      <div class="form-actions">
+
+        <button
+          type="button"
+          class="secondary-btn"
+          onclick="closeModal()"
+        >
+          Cancel
+        </button>
+
+        <button
+          type="submit"
+          class="primary-btn"
+        >
+          Create Request
+        </button>
+
+      </div>
+
+    </form>
+
   </div>
+</div>
 
-  <div class="form-group">
-    <label>Recipient Address</label>
-    <input
-      type="text"
-      id="recipient"
-      placeholder="0x..."
-      required
-    >
-  </div>
+<script>
 
-  <div class="form-group">
-    <label>Execution Condition</label>
+let request = {
+  id: "QV-001",
+  amount: 2500,
+  recipient: "0x71A9...8F21",
+  condition: "Block height",
+  target: "123456",
+  description: "Treasury liquidity transfer",
+  approvals: [1, 2],
+  status: "Pending"
+};
 
-    <select id="condition">
-      <option value="Block height">
-        Block height
-      </option>
+const validatorNames = [
+  "Validator 1",
+  "Validator 2",
+  "Validator 3",
+  "Validator 4",
+  "Validator 5"
+];
 
-      <option value="Scheduled time">
-        Scheduled time
-      </option>
-    </select>
-  </div>
+let audit = [
+  {
+    action: "Transaction request created",
+    time: "Initial state"
+  },
+  {
+    action: "Validator 1 approved",
+    time: "Confirmed"
+  },
+  {
+    action: "Validator 2 approved",
+    time: "Confirmed"
+  }
+];
 
-  <div class="form-group">
-    <label>Condition Target</label>
+function render() {
+  renderRequest();
+  renderValidators();
+  renderAudit();
+  updatePipeline();
+}
 
-    <input
-      type="text"
-      id="target"
-      placeholder="123456"
-      required
-    >
-  </div>
+function renderRequest() {
 
-  <div class="form-group">
-    <label>Description</label>
+  const approved = request.approvals.length;
 
-    <textarea
-      id="description"
-      placeholder="Describe this treasury transaction..."
-    ></textarea>
-  </div>
+  const progress = Math.min((approved / 3) * 100, 100);
 
-  <div class="form-actions">
+  let statusClass = "";
 
-    <button
-      type="button"
-      class="secondary-btn"
-      onclick="closeModal()"
-    >
-      Cancel
-    </button>
+  if (request.status === "Ready") {
+    statusClass = "ready";
+  }
 
-    <button
-      type="submit"
-      class="primary-btn"
-    >
-      Create Request
-    </button>
+  if (request.status === "Executed") {
+    statusClass = "executed";
+  }
 
-  </div>
+  document.getElementById("requests").innerHTML = `
 
-</form>
+    <div class="request-card">
 
-  </div></div><script>
+      <div class="request-top">
 
-  let requestNumber = 1;
+        <div>
+          <div class="request-id">
+            ${request.id}
+          </div>
 
-  let requests = [
-    {
-      id: "QV-001",
-      amount: 100,
-      recipient: "0x8F...21A",
-      condition: "Block height",
-      target: "123456",
-      description: "Initial treasury payment",
-      approvals: 2
-    }
-  ];
+          <div class="amount">
+            ${Number(request.amount).toLocaleString()} USDC
+          </div>
+        </div>
 
+        <div class="status ${statusClass}">
+          ${request.status}
+        </div>
 
-  function openModal() {
+      </div>
+
+      <div class="request-details">
+
+        <div class="detail">
+          <div class="detail-label">Recipient</div>
+          <div class="detail-value">
+            ${request.recipient}
+          </div>
+        </div>
+
+        <div class="detail">
+          <div class="detail-label">Condition</div>
+          <div class="detail-value">
+            ${request.condition}
+          </div>
+        </div>
+
+        <div class="detail">
+          <div class="detail-label">Target</div>
+          <div class="detail-value">
+            ${request.target}
+          </div>
+        </div>
+
+      </div>
+
+      <div class="progress-wrap">
+
+        <div class="progress-header">
+          <span>Validator Quorum</span>
+          <span>${approved} / 3 required</span>
+        </div>
+
+        <div class="progress">
+          <div
+            class="progress-bar"
+            style="width:${progress}%"
+          ></div>
+        </div>
+
+      </div>
+
+      <div class="detail">
+        <div class="detail-label">Description</div>
+        <div class="detail-value">
+          ${request.description || "No description provided"}
+        </div>
+      </div>
+
+    </div>
+  `;
+}
+
+function renderValidators() {
+
+  const container = document.getElementById("validators");
+
+  container.innerHTML = "";
+
+  validatorNames.forEach((name, index) => {
+
+    const number = index + 1;
+
+    const approved = request.approvals.includes(number);
+
+    const div = document.createElement("div");
+
+    div.className =
+      approved
+        ? "validator approved"
+        : "validator";
+
+    div.innerHTML = `
+
+      <div class="validator-icon">
+        ${approved ? "✓" : number}
+      </div>
+
+      <div class="validator-name">
+        ${name}
+      </div>
+
+      <div class="validator-state">
+        ${approved ? "Approved" : "Active"}
+      </div>
+
+      <button
+        class="approve-btn"
+        onclick="approveValidator(${number})"
+        ${approved || request.status === "Executed" ? "disabled" : ""}
+      >
+        ${approved ? "Approved" : "Approve"}
+      </button>
+    `;
+
+    container.appendChild(div);
+  });
+}
+
+function approveValidator(number) {
+
+  if (request.approvals.includes(number)) {
+    return;
+  }
+
+  request.approvals.push(number);
+
+  audit.push({
+    action: `Validator ${number} approved request`,
+    time: "Just now"
+  });
+
+  if (request.approvals.length >= 3) {
+
+    request.status = "Ready";
+
+    audit.push({
+      action: "3-of-5 quorum reached",
+      time: "Confirmed"
+    });
+
+    audit.push({
+      action: "Threshold signature generated",
+      time: "Simulated"
+    });
+
+    document.getElementById("executionMessage").textContent =
+      "Quorum reached. The threshold signature is ready. The execution condition can now be evaluated.";
+
+  }
+
+  render();
+}
+
+function executeRequest() {
+
+  if (request.approvals.length < 3) {
+    return;
+  }
+
+  request.status = "Executed";
+
+  audit.push({
+    action: "Conditional execution completed",
+    time: "Just now"
+  });
+
+  audit.push({
+    action: "Threshold signature verified",
+    time: "Verified"
+  });
+
+  document.getElementById("executionMessage").textContent =
+    "Transaction executed successfully after quorum approval and condition verification.";
+
+  render();
+}
+
+function updatePipeline() {
+
+  document
+    .getElementById("step1")
+    .classList.add("active");
+
+  if (request.approvals.length >= 1) {
     document
-      .getElementById("modal")
+      .getElementById("step2")
       .classList.add("active");
   }
 
-
-  function closeModal() {
+  if (request.approvals.length >= 3) {
     document
-      .getElementById("modal")
-      .classList.remove("active");
+      .getElementById("step3")
+      .classList.add("active");
+
+    document
+      .getElementById("step4")
+      .classList.add("active");
   }
 
+  const executeBtn =
+    document.getElementById("executeBtn");
 
-  function renderRequests() {
+  executeBtn.disabled =
+    request.approvals.length < 3 ||
+    request.status === "Executed";
 
-    const container = document.getElementById("requests");
+  if (request.status === "Executed") {
+    executeBtn.textContent = "Executed";
+  } else {
+    executeBtn.textContent = "Execute Transaction";
+  }
 
-    if (requests.length === 0) {
+  document.getElementById("pendingCount").textContent =
+    request.status === "Executed" ? "0" : "1";
+}
 
-      container.innerHTML = `
-        <div class="card empty">
-          No transaction requests yet.
+function renderAudit() {
+
+  document.getElementById("audit").innerHTML =
+    audit
+      .slice()
+      .reverse()
+      .map(item => `
+        <div class="audit-row">
+          <span>${item.action}</span>
+          <span>${item.time}</span>
         </div>
-      `;
+      `)
+      .join("");
+}
 
-      return;
-    }
-
-
-    container.innerHTML = requests.map((request, index) => {
-
-      const ready = request.approvals >= 3;
-
-      const percentage =
-        Math.min((request.approvals / 3) * 100, 100);
-
-
-      return `
-
-        <div class="card request-card">
-
-          <div class="request">
-
-            <div class="request-info">
-
-              <div class="request-id">
-                Request #${request.id}
-              </div>
-
-              <div class="request-amount">
-                ${request.amount} USDC
-              </div>
-
-              <div class="request-to">
-                Destination: ${request.recipient}
-              </div>
-
-              <div class="request-to">
-                Condition:
-                ${request.condition}
-                ≥ ${request.target}
-              </div>
-
-              <span class="status ${ready ? "ready" : ""}">
-                ${ready ? "Quorum reached" : "Awaiting quorum"}
-              </span>
-
-            </div>
-
-
-            <button
-              class="approve-btn"
-              onclick="approveRequest(${index})"
-              ${ready ? "disabled" : ""}
-            >
-              ${ready ? "Approved" : "Approve"}
-            </button>
-
-          </div>
-
-
-          <div class="progress">
-
-            <div class="progress-top">
-
-              <span>Validator approval</span>
-
-              <strong>
-                ${Math.min(request.approvals, 3)} / 3
-              </strong>
-
-            </div>
-
-            <div class="bar">
-
-              <div
-                class="bar-fill"
-                style="width:${percentage}%"
-              ></div>
-
-            </div>
-
-          </div>
-
-        </div>
-
-      `;
-
-    }).join("");
-
-
-    const pending =
-      requests.filter(request => request.approvals < 3).length;
-
-    document.getElementById("pendingCount").textContent = pending;
-  }
-
-
-  function approveRequest(index) {
-
-    if (requests[index].approvals < 3) {
-
-      requests[index].approvals++;
-
-      renderRequests();
-
-    }
-
-  }
-
-
+function openModal() {
   document
-    .getElementById("requestForm")
-    .addEventListener("submit", function(event) {
+    .getElementById("modal")
+    .classList.add("show");
+}
 
-      event.preventDefault();
+function closeModal() {
+  document
+    .getElementById("modal")
+    .classList.remove("show");
+}
 
-      requestNumber++;
+document
+  .getElementById("requestForm")
+  .addEventListener("submit", function(e) {
 
-      const newRequest = {
+    e.preventDefault();
 
-        id:
-          "QV-" +
-          String(requestNumber).padStart(3, "0"),
+    request = {
+      id: "QV-" + String(Date.now()).slice(-4),
 
-        amount:
-          document.getElementById("amount").value,
+      amount:
+        parseFloat(
+          document.getElementById("amount").value
+        ),
 
-        recipient:
-          document.getElementById("recipient").value,
+      recipient:
+        document.getElementById("recipient").value,
 
-        condition:
-          document.getElementById("condition").value,
+      condition:
+        document.getElementById("condition").value,
 
-        target:
-          document.getElementById("target").value,
+      target:
+        document.getElementById("target").value,
 
-        description:
-          document.getElementById("description").value,
+      description:
+        document.getElementById("description").value,
 
-        approvals: 0
+      approvals: [],
 
-      };
+      status: "Pending"
+    };
 
+    audit = [
+      {
+        action: "New transaction request created",
+        time: "Just now"
+      }
+    ];
 
-      requests.unshift(newRequest);
+    document.getElementById("requestForm").reset();
 
-      this.reset();
+    closeModal();
 
-      closeModal();
+    document.getElementById("executionMessage").textContent =
+      "Waiting for the required 3-of-5 validator quorum.";
 
-      renderRequests();
+    render();
+  });
 
-    });
+render();
 
+</script>
 
-  renderRequests();
-
-</script></body>
+</body>
 </html>
