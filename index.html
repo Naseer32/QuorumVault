@@ -1,11 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>QuorumVault</title>
-
-<style>
+<title>QuorumVault</title><style>
 * {
   box-sizing: border-box;
 }
@@ -33,10 +30,15 @@ button {
   margin: auto;
 }
 
-/* Header */
-
 header {
   padding: 24px 0 10px;
+}
+
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
 }
 
 .brand {
@@ -73,7 +75,16 @@ header {
   font-weight: 700;
 }
 
-/* Hero */
+.wallet-box {
+  text-align: right;
+}
+
+.wallet-status {
+  display: block;
+  margin-top: 7px;
+  font-size: 11px;
+  color: #667085;
+}
 
 .hero {
   padding: 32px 0 20px;
@@ -99,8 +110,6 @@ header {
   line-height: 1.6;
 }
 
-/* Buttons */
-
 .primary-btn,
 .secondary-btn {
   border: 0;
@@ -118,12 +127,20 @@ header {
   background: #104dcc;
 }
 
+.primary-btn:disabled {
+  background: #b7c3d4;
+  cursor: default;
+}
+
 .secondary-btn {
   background: #eef2f6;
   color: #344054;
 }
 
-/* Stats */
+.wallet-connected {
+  background: #e9f8ef;
+  color: #087443;
+}
 
 .stats {
   display: grid;
@@ -150,8 +167,6 @@ header {
   font-weight: 800;
 }
 
-/* Sections */
-
 .section-title {
   margin: 34px 0 14px;
 }
@@ -160,8 +175,6 @@ header {
   margin: 0;
   font-size: 19px;
 }
-
-/* Request */
 
 .request-card {
   background: white;
@@ -232,8 +245,6 @@ header {
   word-break: break-word;
 }
 
-/* Progress */
-
 .progress-wrap {
   margin: 20px 0;
 }
@@ -259,8 +270,6 @@ header {
   background: #155eef;
   transition: width .35s ease;
 }
-
-/* Validators */
 
 .validators {
   display: grid;
@@ -325,8 +334,6 @@ header {
   cursor: default;
 }
 
-/* Workflow */
-
 .architecture {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -347,8 +354,6 @@ header {
   background: #f5f8ff;
   color: #155eef;
 }
-
-/* Execution */
 
 .execution-panel {
   margin-top: 16px;
@@ -377,11 +382,13 @@ header {
   font-size: 12px;
 }
 
+.audit-row:last-child {
+  border-bottom: 0;
+}
+
 .audit-row span:last-child {
   color: #667085;
 }
-
-/* Footer */
 
 footer {
   padding: 42px 0 28px;
@@ -389,8 +396,6 @@ footer {
   color: #98a2b3;
   font-size: 12px;
 }
-
-/* Modal */
 
 .modal-overlay {
   display: none;
@@ -473,9 +478,24 @@ footer {
   margin-top: 20px;
 }
 
-/* Responsive */
+.connection-note {
+  margin-top: 10px;
+  font-size: 11px;
+  color: #667085;
+  line-height: 1.5;
+}
 
 @media (max-width: 800px) {
+
+  .header-row {
+    flex-direction: column;
+  }
+
+  .wallet-box {
+    width: 100%;
+    text-align: left;
+  }
+
   .hero-row {
     flex-direction: column;
     align-items: flex-start;
@@ -503,6 +523,7 @@ footer {
 }
 
 @media (max-width: 480px) {
+
   .container {
     width: min(100% - 22px, 1120px);
   }
@@ -534,252 +555,440 @@ footer {
   .request-card {
     padding: 16px;
   }
+
+  .request-top {
+    flex-direction: column;
+  }
 }
-</style>
-</head>
-
-<body>
-
-<div class="container">
-
-<header>
+</style></head><body><div class="container"><header>  <div class="header-row"><div>
   <div class="brand">
     <div class="logo">QV</div>
     <h1>QuorumVault</h1>
   </div>
 
   <div class="network">Rialo DevNet</div>
-</header>
-
-<section class="hero">
-  <div class="hero-row">
-    <div>
-      <h2>Threshold-controlled treasury</h2>
-      <p>
-        Coordinate treasury transactions through validator quorums
-        and conditional execution. No single validator can authorize
-        a transaction alone.
-      </p>
-    </div>
-
-    <button class="primary-btn" onclick="openModal()">
-      + Create Request
-    </button>
-  </div>
-</section>
-
-<section class="stats">
-
-  <div class="card">
-    <div class="stat-label">Treasury Balance</div>
-    <div class="stat-value">10,000 USDC</div>
-  </div>
-
-  <div class="card">
-    <div class="stat-label">Validators</div>
-    <div class="stat-value">5</div>
-  </div>
-
-  <div class="card">
-    <div class="stat-label">Threshold</div>
-    <div class="stat-value">3 / 5</div>
-  </div>
-
-  <div class="card">
-    <div class="stat-label">Pending Requests</div>
-    <div class="stat-value" id="pendingCount">1</div>
-  </div>
-
-</section>
-
-<div class="section-title">
-  <h3>Transaction Requests</h3>
 </div>
 
-<div id="requests"></div>
-
-<div class="section-title">
-  <h3>Validators</h3>
-</div>
-
-<div class="validators" id="validators"></div>
-
-<div class="section-title">
-  <h3>Execution Pipeline</h3>
-</div>
-
-<div class="architecture">
-  <div class="step active" id="step1">1. Transaction Request</div>
-  <div class="step" id="step2">2. Validator Quorum</div>
-  <div class="step" id="step3">3. Threshold Signature</div>
-  <div class="step" id="step4">4. Conditional Execution</div>
-</div>
-
-<div class="execution-panel">
-  <div class="execution-message" id="executionMessage">
-    Waiting for the required validator quorum.
-  </div>
+<div class="wallet-box">
 
   <button
-    class="primary-btn"
-    id="executeBtn"
-    onclick="executeRequest()"
-    disabled
+    class="secondary-btn"
+    id="walletBtn"
+    onclick="connectWallet()"
   >
-    Execute Transaction
+    Connect Wallet
   </button>
-</div>
 
-<div class="section-title">
-  <h3>Audit Trail</h3>
-</div>
-
-<div class="card audit" id="audit"></div>
-
-<footer>
-  QuorumVault · Built for Rialo
-</footer>
+  <span
+    class="wallet-status"
+    id="walletStatus"
+  >
+    Wallet not connected
+  </span>
 
 </div>
 
-<!-- Modal -->
+  </div></header><section class="hero">  <div class="hero-row"><div>
+  <h2>Threshold-controlled treasury</h2>
 
-<div class="modal-overlay" id="modal">
+  <p>
+    Coordinate treasury transactions through validator quorums
+    and conditional execution. No single validator can authorize
+    a transaction alone.
+  </p>
 
-  <div class="modal">
-
-    <div class="modal-header">
-      <h3>Create Transaction Request</h3>
-
-      <button class="close" onclick="closeModal()">×</button>
-    </div>
-
-    <form id="requestForm">
-
-      <div class="form-group">
-        <label>Amount (USDC)</label>
-        <input
-          type="number"
-          id="amount"
-          placeholder="100"
-          min="0"
-          step="0.01"
-          required
-        >
-      </div>
-
-      <div class="form-group">
-        <label>Recipient Address</label>
-
-        <input
-          type="text"
-          id="recipient"
-          placeholder="0x..."
-          required
-        >
-      </div>
-
-      <div class="form-group">
-        <label>Execution Condition</label>
-
-        <select id="condition">
-          <option value="Block height">Block height</option>
-          <option value="Scheduled time">Scheduled time</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label>Condition Target</label>
-
-        <input
-          type="text"
-          id="target"
-          placeholder="123456"
-          required
-        >
-      </div>
-
-      <div class="form-group">
-        <label>Description</label>
-
-        <textarea
-          id="description"
-          placeholder="Describe this treasury transaction..."
-        ></textarea>
-      </div>
-
-      <div class="form-actions">
-
-        <button
-          type="button"
-          class="secondary-btn"
-          onclick="closeModal()"
-        >
-          Cancel
-        </button>
-
-        <button
-          type="submit"
-          class="primary-btn"
-        >
-          Create Request
-        </button>
-
-      </div>
-
-    </form>
-
+  <div class="connection-note">
+    QuorumVault is currently running its transaction workflow
+    locally. Wallet connectivity is prepared for the Rialo
+    integration layer.
   </div>
 </div>
 
-<script>
+<button
+  class="primary-btn"
+  onclick="openModal()"
+>
+  + Create Request
+</button>
 
-let request = {
-  id: "QV-001",
-  amount: 2500,
-  recipient: "0x71A9...8F21",
-  condition: "Block height",
-  target: "123456",
-  description: "Treasury liquidity transfer",
-  approvals: [1, 2],
-  status: "Pending"
+  </div></section><section class="stats">  <div class="card">
+    <div class="stat-label">Treasury Balance</div>
+    <div class="stat-value">10,000 USDC</div>
+  </div>  <div class="card">
+    <div class="stat-label">Validators</div>
+    <div class="stat-value">5</div>
+  </div>  <div class="card">
+    <div class="stat-label">Threshold</div>
+    <div class="stat-value">3 / 5</div>
+  </div>  <div class="card">
+    <div class="stat-label">Pending Requests</div>
+    <div
+      class="stat-value"
+      id="pendingCount"
+    >
+      1
+    </div>
+  </div></section><div class="section-title">
+  <h3>Transaction Requests</h3>
+</div><div id="requests"></div><div class="section-title">
+  <h3>Validators</h3>
+</div><div
+  class="validators"
+  id="validators"
+></div><div class="section-title">
+  <h3>Execution Pipeline</h3>
+</div><div class="architecture">  <div
+    class="step active"
+    id="step1"
+  >
+    1. Transaction Request
+  </div>  <div
+    class="step"
+    id="step2"
+  >
+    2. Validator Quorum
+  </div>  <div
+    class="step"
+    id="step3"
+  >
+    3. Threshold Signature
+  </div>  <div
+    class="step"
+    id="step4"
+  >
+    4. Conditional Execution
+  </div></div><div class="execution-panel">  <div
+    class="execution-message"
+    id="executionMessage"
+  >
+    Waiting for the required validator quorum.
+  </div><button
+class="primary-btn"
+id="executeBtn"
+onclick="executeRequest()"
+disabled
+
+«»
+
+Execute Transaction
+
+  </button></div><div class="section-title">
+  <h3>Audit Trail</h3>
+</div><div
+  class="card audit"
+  id="audit"
+></div><footer>
+  QuorumVault · Built for Rialo
+</footer></div><div
+  class="modal-overlay"
+  id="modal"
+>  <div class="modal"><div class="modal-header">
+
+  <h3>Create Transaction Request</h3>
+
+  <button
+    class="close"
+    onclick="closeModal()"
+  >
+    ×
+  </button>
+
+</div>
+
+<form id="requestForm">
+
+  <div class="form-group">
+
+    <label>Amount (USDC)</label>
+
+    <input
+      type="number"
+      id="amount"
+      placeholder="100"
+      min="0"
+      step="0.01"
+      required
+    >
+
+  </div>
+
+  <div class="form-group">
+
+    <label>Recipient Address</label>
+
+    <input
+      type="text"
+      id="recipient"
+      placeholder="Recipient address"
+      required
+    >
+
+  </div>
+
+  <div class="form-group">
+
+    <label>Execution Condition</label>
+
+    <select id="condition">
+
+      <option value="Block height">
+        Block height
+      </option>
+
+      <option value="Scheduled time">
+        Scheduled time
+      </option>
+
+    </select>
+
+  </div>
+
+  <div class="form-group">
+
+    <label>Condition Target</label>
+
+    <input
+      type="text"
+      id="target"
+      placeholder="123456"
+      required
+    >
+
+  </div>
+
+  <div class="form-group">
+
+    <label>Description</label>
+
+    <textarea
+      id="description"
+      placeholder="Describe this treasury transaction..."
+    ></textarea>
+
+  </div>
+
+  <div class="form-actions">
+
+    <button
+      type="button"
+      class="secondary-btn"
+      onclick="closeModal()"
+    >
+      Cancel
+    </button>
+
+    <button
+      type="submit"
+      class="primary-btn"
+    >
+      Create Request
+    </button>
+
+  </div>
+
+</form>
+
+  </div></div><script>
+
+/*
+ * ---------------------------------------------------------
+ * QuorumVault
+ * Wallet integration layer
+ * ---------------------------------------------------------
+ *
+ * We deliberately do not hard-code a Rialo RPC endpoint or
+ * chain ID here until the official browser wallet/API details
+ * are confirmed.
+ *
+ * The rest of the application works independently.
+ */
+
+let wallet = {
+  connected: false,
+  address: null,
+  provider: null
 };
 
+
+/*
+ * ---------------------------------------------------------
+ * Wallet
+ * ---------------------------------------------------------
+ */
+
+async function connectWallet() {
+
+  const button =
+    document.getElementById("walletBtn");
+
+  const status =
+    document.getElementById("walletStatus");
+
+  /*
+   * Some browser wallets expose window.ethereum.
+   * We only use it when it actually exists.
+   *
+   * This does NOT claim that Rialo uses an EVM wallet.
+   */
+
+  if (window.ethereum) {
+
+    try {
+
+      const accounts =
+        await window.ethereum.request({
+          method: "eth_requestAccounts"
+        });
+
+      if (!accounts || !accounts.length) {
+        throw new Error("No wallet account returned.");
+      }
+
+      wallet.connected = true;
+      wallet.address = accounts[0];
+      wallet.provider = window.ethereum;
+
+      const shortAddress =
+        wallet.address.slice(0, 6) +
+        "..." +
+        wallet.address.slice(-4);
+
+      button.textContent =
+        shortAddress;
+
+      button.classList.add(
+        "wallet-connected"
+      );
+
+      status.textContent =
+        "Wallet connected";
+
+      audit.push({
+        action: "Wallet connected",
+        time: shortAddress
+      });
+
+      renderAudit();
+
+      return;
+
+    } catch (error) {
+
+      status.textContent =
+        error.message || "Wallet connection failed.";
+
+      return;
+    }
+  }
+
+
+  /*
+   * No compatible browser provider was detected.
+   *
+   * We keep the application usable instead of pretending
+   * that a wallet connection succeeded.
+   */
+
+  status.textContent =
+    "No compatible browser wallet detected.";
+
+  audit.push({
+    action: "Wallet connection attempted",
+    time: "Provider unavailable"
+  });
+
+  renderAudit();
+}
+
+
+/*
+ * ---------------------------------------------------------
+ * Transaction state
+ * ---------------------------------------------------------
+ */
+
+let request = {
+
+  id: "QV-001",
+
+  amount: 2500,
+
+  recipient: "0x71A9...8F21",
+
+  condition: "Block height",
+
+  target: "123456",
+
+  description:
+    "Treasury liquidity transfer",
+
+  approvals: [1, 2],
+
+  status: "Pending"
+
+};
+
+
 const validatorNames = [
+
   "Validator 1",
   "Validator 2",
   "Validator 3",
   "Validator 4",
   "Validator 5"
+
 ];
 
+
 let audit = [
+
   {
     action: "Transaction request created",
     time: "Initial state"
   },
+
   {
     action: "Validator 1 approved",
     time: "Confirmed"
   },
+
   {
     action: "Validator 2 approved",
     time: "Confirmed"
   }
+
 ];
 
+
+/*
+ * ---------------------------------------------------------
+ * Rendering
+ * ---------------------------------------------------------
+ */
+
 function render() {
+
   renderRequest();
+
   renderValidators();
+
   renderAudit();
+
   updatePipeline();
+
 }
+
 
 function renderRequest() {
 
-  const approved = request.approvals.length;
+  const approved =
+    request.approvals.length;
 
-  const progress = Math.min((approved / 3) * 100, 100);
+  const progress =
+    Math.min(
+      (approved / 3) * 100,
+      100
+    );
 
   let statusClass = "";
 
@@ -791,24 +1000,28 @@ function renderRequest() {
     statusClass = "executed";
   }
 
-  document.getElementById("requests").innerHTML = `
+  document.getElementById(
+    "requests"
+  ).innerHTML = `
 
     <div class="request-card">
 
       <div class="request-top">
 
         <div>
+
           <div class="request-id">
-            ${request.id}
+            ${escapeHTML(request.id)}
           </div>
 
           <div class="amount">
             ${Number(request.amount).toLocaleString()} USDC
           </div>
+
         </div>
 
         <div class="status ${statusClass}">
-          ${request.status}
+          ${escapeHTML(request.status)}
         </div>
 
       </div>
@@ -816,24 +1029,39 @@ function renderRequest() {
       <div class="request-details">
 
         <div class="detail">
-          <div class="detail-label">Recipient</div>
-          <div class="detail-value">
-            ${request.recipient}
+
+          <div class="detail-label">
+            Recipient
           </div>
+
+          <div class="detail-value">
+            ${escapeHTML(request.recipient)}
+          </div>
+
         </div>
 
         <div class="detail">
-          <div class="detail-label">Condition</div>
-          <div class="detail-value">
-            ${request.condition}
+
+          <div class="detail-label">
+            Condition
           </div>
+
+          <div class="detail-value">
+            ${escapeHTML(request.condition)}
+          </div>
+
         </div>
 
         <div class="detail">
-          <div class="detail-label">Target</div>
-          <div class="detail-value">
-            ${request.target}
+
+          <div class="detail-label">
+            Target
           </div>
+
+          <div class="detail-value">
+            ${escapeHTML(request.target)}
+          </div>
+
         </div>
 
       </div>
@@ -841,134 +1069,243 @@ function renderRequest() {
       <div class="progress-wrap">
 
         <div class="progress-header">
-          <span>Validator Quorum</span>
-          <span>${approved} / 3 required</span>
+
+          <span>
+            Validator Quorum
+          </span>
+
+          <span>
+            ${approved} / 3 required
+          </span>
+
         </div>
 
         <div class="progress">
+
           <div
             class="progress-bar"
             style="width:${progress}%"
           ></div>
+
         </div>
 
       </div>
 
       <div class="detail">
-        <div class="detail-label">Description</div>
-        <div class="detail-value">
-          ${request.description || "No description provided"}
+
+        <div class="detail-label">
+          Description
         </div>
+
+        <div class="detail-value">
+          ${
+            escapeHTML(
+              request.description ||
+              "No description provided"
+            )
+          }
+        </div>
+
       </div>
 
     </div>
+
   `;
+
 }
+
 
 function renderValidators() {
 
-  const container = document.getElementById("validators");
+  const container =
+    document.getElementById(
+      "validators"
+    );
 
   container.innerHTML = "";
 
-  validatorNames.forEach((name, index) => {
+  validatorNames.forEach(
+    (name, index) => {
 
-    const number = index + 1;
+      const number =
+        index + 1;
 
-    const approved = request.approvals.includes(number);
+      const approved =
+        request.approvals.includes(
+          number
+        );
 
-    const div = document.createElement("div");
+      const div =
+        document.createElement(
+          "div"
+        );
 
-    div.className =
-      approved
-        ? "validator approved"
-        : "validator";
+      div.className =
+        approved
+          ? "validator approved"
+          : "validator";
 
-    div.innerHTML = `
+      div.innerHTML = `
 
-      <div class="validator-icon">
-        ${approved ? "✓" : number}
-      </div>
+        <div class="validator-icon">
+          ${approved ? "✓" : number}
+        </div>
 
-      <div class="validator-name">
-        ${name}
-      </div>
+        <div class="validator-name">
+          ${name}
+        </div>
 
-      <div class="validator-state">
-        ${approved ? "Approved" : "Active"}
-      </div>
+        <div class="validator-state">
+          ${approved ? "Approved" : "Active"}
+        </div>
 
-      <button
-        class="approve-btn"
-        onclick="approveValidator(${number})"
-        ${approved || request.status === "Executed" ? "disabled" : ""}
-      >
-        ${approved ? "Approved" : "Approve"}
-      </button>
-    `;
+        <button
+          class="approve-btn"
+          onclick="approveValidator(${number})"
+          ${
+            approved ||
+            request.status === "Executed"
+              ? "disabled"
+              : ""
+          }
+        >
+          ${approved ? "Approved" : "Approve"}
+        </button>
 
-    container.appendChild(div);
-  });
+      `;
+
+      container.appendChild(
+        div
+      );
+
+    }
+  );
+
 }
+
+
+/*
+ * ---------------------------------------------------------
+ * Validator quorum
+ * ---------------------------------------------------------
+ */
 
 function approveValidator(number) {
 
-  if (request.approvals.includes(number)) {
+  if (
+    request.approvals.includes(
+      number
+    )
+  ) {
     return;
   }
 
-  request.approvals.push(number);
+  request.approvals.push(
+    number
+  );
 
   audit.push({
-    action: `Validator ${number} approved request`,
-    time: "Just now"
+
+    action:
+      `Validator ${number} approved request`,
+
+    time:
+      "Just now"
+
   });
 
-  if (request.approvals.length >= 3) {
 
-    request.status = "Ready";
+  if (
+    request.approvals.length >= 3
+  ) {
+
+    request.status =
+      "Ready";
 
     audit.push({
-      action: "3-of-5 quorum reached",
-      time: "Confirmed"
+
+      action:
+        "3-of-5 quorum reached",
+
+      time:
+        "Confirmed"
+
     });
 
     audit.push({
-      action: "Threshold signature generated",
-      time: "Simulated"
+
+      action:
+        "Threshold signature generated",
+
+      time:
+        "Simulated"
+
     });
 
-    document.getElementById("executionMessage").textContent =
+    document.getElementById(
+      "executionMessage"
+    ).textContent =
       "Quorum reached. The threshold signature is ready. The execution condition can now be evaluated.";
 
   }
 
   render();
+
 }
+
+
+/*
+ * ---------------------------------------------------------
+ * Execution
+ * ---------------------------------------------------------
+ */
 
 function executeRequest() {
 
-  if (request.approvals.length < 3) {
+  if (
+    request.approvals.length < 3
+  ) {
     return;
   }
 
-  request.status = "Executed";
+  request.status =
+    "Executed";
 
   audit.push({
-    action: "Conditional execution completed",
-    time: "Just now"
+
+    action:
+      "Conditional execution completed",
+
+    time:
+      "Just now"
+
   });
 
   audit.push({
-    action: "Threshold signature verified",
-    time: "Verified"
+
+    action:
+      "Threshold signature verified",
+
+    time:
+      "Simulated"
+
   });
 
-  document.getElementById("executionMessage").textContent =
-    "Transaction executed successfully after quorum approval and condition verification.";
+  document.getElementById(
+    "executionMessage"
+  ).textContent =
+    "Transaction executed successfully in the QuorumVault simulation. Rialo onchain execution will replace this step once the official transaction interface is connected.";
 
   render();
+
 }
+
+
+/*
+ * ---------------------------------------------------------
+ * Pipeline
+ * ---------------------------------------------------------
+ */
 
 function updatePipeline() {
 
@@ -976,13 +1313,22 @@ function updatePipeline() {
     .getElementById("step1")
     .classList.add("active");
 
-  if (request.approvals.length >= 1) {
+
+  if (
+    request.approvals.length >= 1
+  ) {
+
     document
       .getElementById("step2")
       .classList.add("active");
+
   }
 
-  if (request.approvals.length >= 3) {
+
+  if (
+    request.approvals.length >= 3
+  ) {
+
     document
       .getElementById("step3")
       .classList.add("active");
@@ -990,103 +1336,245 @@ function updatePipeline() {
     document
       .getElementById("step4")
       .classList.add("active");
+
   }
 
+
   const executeBtn =
-    document.getElementById("executeBtn");
+    document.getElementById(
+      "executeBtn"
+    );
+
 
   executeBtn.disabled =
     request.approvals.length < 3 ||
     request.status === "Executed";
 
-  if (request.status === "Executed") {
-    executeBtn.textContent = "Executed";
+
+  if (
+    request.status === "Executed"
+  ) {
+
+    executeBtn.textContent =
+      "Executed";
+
   } else {
-    executeBtn.textContent = "Execute Transaction";
+
+    executeBtn.textContent =
+      "Execute Transaction";
+
   }
 
-  document.getElementById("pendingCount").textContent =
-    request.status === "Executed" ? "0" : "1";
+
+  document.getElementById(
+    "pendingCount"
+  ).textContent =
+    request.status === "Executed"
+      ? "0"
+      : "1";
+
 }
+
+
+/*
+ * ---------------------------------------------------------
+ * Audit trail
+ * ---------------------------------------------------------
+ */
 
 function renderAudit() {
 
-  document.getElementById("audit").innerHTML =
+  document.getElementById(
+    "audit"
+  ).innerHTML =
+
     audit
       .slice()
       .reverse()
-      .map(item => `
-        <div class="audit-row">
-          <span>${item.action}</span>
-          <span>${item.time}</span>
-        </div>
-      `)
+      .map(
+        item => `
+
+          <div class="audit-row">
+
+            <span>
+              ${escapeHTML(item.action)}
+            </span>
+
+            <span>
+              ${escapeHTML(item.time)}
+            </span>
+
+          </div>
+
+        `
+      )
       .join("");
+
 }
 
+
+/*
+ * ---------------------------------------------------------
+ * Modal
+ * ---------------------------------------------------------
+ */
+
 function openModal() {
+
   document
     .getElementById("modal")
     .classList.add("show");
+
 }
 
+
 function closeModal() {
+
   document
     .getElementById("modal")
     .classList.remove("show");
+
 }
+
+
+/*
+ * ---------------------------------------------------------
+ * Create request
+ * ---------------------------------------------------------
+ */
 
 document
   .getElementById("requestForm")
-  .addEventListener("submit", function(e) {
+  .addEventListener(
+    "submit",
+    function(e) {
 
-    e.preventDefault();
+      e.preventDefault();
 
-    request = {
-      id: "QV-" + String(Date.now()).slice(-4),
+      request = {
 
-      amount:
-        parseFloat(
-          document.getElementById("amount").value
-        ),
+        id:
+          "QV-" +
+          String(Date.now())
+            .slice(-4),
 
-      recipient:
-        document.getElementById("recipient").value,
+        amount:
+          parseFloat(
+            document.getElementById(
+              "amount"
+            ).value
+          ),
 
-      condition:
-        document.getElementById("condition").value,
+        recipient:
+          document.getElementById(
+            "recipient"
+          ).value,
 
-      target:
-        document.getElementById("target").value,
+        condition:
+          document.getElementById(
+            "condition"
+          ).value,
 
-      description:
-        document.getElementById("description").value,
+        target:
+          document.getElementById(
+            "target"
+          ).value,
 
-      approvals: [],
+        description:
+          document.getElementById(
+            "description"
+          ).value,
 
-      status: "Pending"
-    };
+        approvals: [],
 
-    audit = [
-      {
-        action: "New transaction request created",
-        time: "Just now"
-      }
-    ];
+        status:
+          "Pending"
 
-    document.getElementById("requestForm").reset();
+      };
 
-    closeModal();
 
-    document.getElementById("executionMessage").textContent =
-      "Waiting for the required 3-of-5 validator quorum.";
+      audit = [
 
-    render();
-  });
+        {
+
+          action:
+            "New transaction request created",
+
+          time:
+            "Just now"
+
+        }
+
+      ];
+
+
+      document
+        .getElementById(
+          "requestForm"
+        )
+        .reset();
+
+
+      closeModal();
+
+
+      document.getElementById(
+        "executionMessage"
+      ).textContent =
+        "Waiting for the required 3-of-5 validator quorum.";
+
+
+      render();
+
+    }
+  );
+
+
+/*
+ * ---------------------------------------------------------
+ * Basic HTML escaping
+ * ---------------------------------------------------------
+ */
+
+function escapeHTML(value) {
+
+  return String(value)
+
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+
+    .replace(
+      /</g,
+      "&lt;"
+    )
+
+    .replace(
+      />/g,
+      "&gt;"
+    )
+
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+
+    .replace(
+      /'/g,
+      "&#039;"
+    );
+
+}
+
+
+/*
+ * ---------------------------------------------------------
+ * Initial render
+ * ---------------------------------------------------------
+ */
 
 render();
 
-</script>
-
-</body>
+</script></body>
 </html>
