@@ -907,6 +907,27 @@ async function connectWallet() {
  * ---------------------------------------------------------
  */
 
+/*
+ * ---------------------------------------------------------
+ * RialoAdapter
+ * Single place for all Rialo calls. Currently simulation only.
+ * Replace the method bodies with verified Rialo RPC calls
+ * once DevNet access and the official interface are confirmed.
+ * ---------------------------------------------------------
+ */
+
+const RialoAdapter = {
+  mode: "simulation",
+
+  async approve(req, validatorNumber) {
+    return { ok: true, note: "Simulated", ref: null };
+  },
+
+  async execute(req) {
+    return { ok: true, note: "Simulated", ref: null };
+  }
+};
+
 let request = {
 
   id: "QV-001",
@@ -1190,7 +1211,20 @@ function renderValidators() {
  * ---------------------------------------------------------
  */
 
-function approveValidator(number) {
+async function approveValidator(number) {
+
+  if (!request.approvals.includes(number)) {
+    const r = await RialoAdapter.approve(request, number);
+    if (!r.ok) {
+      audit.push({
+        action: `Validator ${number} approval failed`,
+        time: r.note || "Error"
+      });
+      render();
+      return;
+    }
+  }
+
 
   if (
     request.approvals.includes(
@@ -1260,7 +1294,20 @@ function approveValidator(number) {
  * ---------------------------------------------------------
  */
 
-function executeRequest() {
+async function executeRequest() {
+
+  if (request.approvals.length >= 3) {
+    const r = await RialoAdapter.execute(request);
+    if (!r.ok) {
+      audit.push({
+        action: "Execution failed",
+        time: r.note || "Error"
+      });
+      render();
+      return;
+    }
+  }
+
 
   if (
     request.approvals.length < 3
