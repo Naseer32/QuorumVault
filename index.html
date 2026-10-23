@@ -987,7 +987,51 @@ let audit = [
  * ---------------------------------------------------------
  */
 
+const QV_STORAGE_KEY = "quorumvault:v1";
+let qvStateLoaded = false;
+
+function loadState() {
+  try {
+    if (location.hash === "#reset") {
+      localStorage.removeItem(QV_STORAGE_KEY);
+      history.replaceState(null, "", location.pathname + location.search);
+      return;
+    }
+    const raw = localStorage.getItem(QV_STORAGE_KEY);
+    if (!raw) return;
+    const saved = JSON.parse(raw);
+    if (
+      saved &&
+      saved.request &&
+      Array.isArray(saved.request.approvals) &&
+      Array.isArray(saved.audit)
+    ) {
+      request = saved.request;
+      audit = saved.audit;
+    }
+  } catch (e) {
+    /* storage unavailable or corrupted: keep defaults */
+  }
+}
+
+function saveState() {
+  try {
+    localStorage.setItem(
+      QV_STORAGE_KEY,
+      JSON.stringify({ request: request, audit: audit })
+    );
+  } catch (e) {
+    /* storage unavailable: app keeps working in memory */
+  }
+}
+
 function render() {
+  if (!qvStateLoaded) {
+    qvStateLoaded = true;
+    loadState();
+  }
+  saveState();
+
 
   renderRequest();
 
