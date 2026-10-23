@@ -989,6 +989,13 @@ let audit = [
 
 const QV_STORAGE_KEY = "quorumvault:v1";
 let qvStateLoaded = false;
+let items = [];
+let currentIndex = 0;
+
+function currentMessage() {
+  const el = document.getElementById("executionMessage");
+  return el ? el.textContent : "";
+}
 
 function loadState() {
   try {
@@ -1008,6 +1015,20 @@ function loadState() {
     ) {
       request = saved.request;
       audit = saved.audit;
+      if (
+        Array.isArray(saved.items) &&
+        saved.items.length &&
+        Number.isInteger(saved.currentIndex) &&
+        saved.currentIndex >= 0 &&
+        saved.currentIndex < saved.items.length
+      ) {
+        items = saved.items;
+        currentIndex = saved.currentIndex;
+      }
+      if (saved.msg) {
+        const el = document.getElementById("executionMessage");
+        if (el) el.textContent = saved.msg;
+      }
     }
   } catch (e) {
     /* storage unavailable or corrupted: keep defaults */
@@ -1016,12 +1037,64 @@ function loadState() {
 
 function saveState() {
   try {
+    items[currentIndex] = { request: request, audit: audit, msg: currentMessage() };
     localStorage.setItem(
       QV_STORAGE_KEY,
-      JSON.stringify({ request: request, audit: audit })
+      JSON.stringify({
+        request: request,
+        audit: audit,
+        msg: currentMessage(),
+        items: items,
+        currentIndex: currentIndex
+      })
     );
   } catch (e) {
     /* storage unavailable: app keeps working in memory */
+  }
+}
+
+function switchRequest(i) {
+  if (!items[i] || i === currentIndex) return;
+  items[currentIndex] = { request: request, audit: audit, msg: currentMessage() };
+  currentIndex = i;
+  request = items[i].request;
+  audit = items[i].audit;
+  const el = document.getElementById("executionMessage");
+  if (el) {
+    el.textContent =
+      items[i].msg || "Waiting for the required 3-of-5 validator quorum.";
+  }
+  render();
+}
+
+function renderPicker() {
+  try {
+    let sel = document.getElementById("requestPicker");
+    if (!sel) {
+      const btn = document.querySelector('[onclick="openModal()"]');
+      if (!btn) return;
+      sel = document.createElement("select");
+      sel.id = "requestPicker";
+      sel.style.cssText =
+        "margin-right:8px;padding:8px;border-radius:8px;max-width:60%;" +
+        "background:inherit;color:inherit;border:1px solid rgba(128,128,128,.4);";
+      sel.addEventListener("change", function () {
+        switchRequest(Number(sel.value));
+      });
+      btn.parentNode.insertBefore(sel, btn);
+    }
+    sel.innerHTML = "";
+    items.forEach(function (it, i) {
+      const o = document.createElement("option");
+      o.value = String(i);
+      o.textContent =
+        it.request.id + " · " + it.request.amount + " USDC · " + it.request.status;
+      sel.appendChild(o);
+    });
+    sel.value = String(currentIndex);
+    sel.style.display = items.length > 1 ? "" : "none";
+  } catch (e) {
+    /* picker is optional */
   }
 }
 
@@ -1031,6 +1104,7 @@ function render() {
     loadState();
   }
   saveState();
+  renderPicker();
 
 
   renderRequest();
@@ -1542,6 +1616,8 @@ document
 
       e.preventDefault();
 
+      items[currentIndex] = { request: request, audit: audit, msg: currentMessage() };
+
       request = {
 
         id:
@@ -1613,6 +1689,9 @@ document
         "executionMessage"
       ).textContent =
         "Waiting for the required 3-of-5 validator quorum.";
+
+      items.push({ request: request, audit: audit, msg: currentMessage() });
+      currentIndex = items.length - 1;
 
 
       render();
